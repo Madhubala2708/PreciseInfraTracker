@@ -227,3 +227,4 @@ const StockPopup = ({ title, onClose, onSubmit, data }) => {
 };
 
 export default StockPopup;
+
