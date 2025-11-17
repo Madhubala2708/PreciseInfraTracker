@@ -325,8 +325,11 @@ const MaterialCreateScreen = () => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-3">
-                    <Form.Label className="text-black fs-5">BOQ ID <span className="text-danger">*</span></Form.Label>
-                    <Form.Control className="minh52px"
+                    <Form.Label className="text-black fs-5">
+                      BOQ ID <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      className="minh52px"
                       style={{ backgroundColor: "white" }}
                       type="text"
                       placeholder="BOQ ID"
@@ -343,7 +346,7 @@ const MaterialCreateScreen = () => {
                       Title <span className="text-danger">*</span>
                     </Form.Label>
                     <Form.Control
-                    className="minh52px"
+                      className="minh52px"
                       type="text"
                       placeholder="BOQ TITLE"
                       value={title}
@@ -357,7 +360,9 @@ const MaterialCreateScreen = () => {
               <div className="row">
                 <div className="col-md-6">
                   <Form.Group className="mb-3">
-                    <Form.Label className="text-black fs-5">Vendor <span className="text-danger">*</span></Form.Label>
+                    <Form.Label className="text-black fs-5">
+                      Vendor <span className="text-danger">*</span>
+                    </Form.Label>
                     <Form.Select
                       className="form-control minh52px"
                       style={{ backgroundColor: "white" }}
@@ -386,7 +391,8 @@ const MaterialCreateScreen = () => {
                       Approved By <span className="text-danger">*</span>
                     </Form.Label>
 
-                    <MultipleSelect className="minh52px"
+                    <MultipleSelect
+                      className="minh52px"
                       required
                       selectedOptions={selectedApprover}
                       handleSelected={setSelectedApprover}
@@ -475,11 +481,21 @@ const MaterialCreateScreen = () => {
 
                 <Button
                   type="submit"
-                  className="mt-4 me-0 w180 bg-primary border-0 border-radius-4 fs-16-500 text-white d-flex align-items-center justify-content-center">                    
-                  <svg className="me-2" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20.7885 2.50872C20.6693 2.40981 20.5245 2.34679 20.3709 2.32701C20.2173 2.30723 20.0612 2.33149 19.9209 2.39698L3.08105 10.3013V11.8307L10.1541 14.6599L14.6911 21.6399H16.2208L21.0544 3.34216C21.0936 3.19231 21.0895 3.03441 21.0424 2.88685C20.9953 2.73929 20.9072 2.60815 20.7885 2.50872ZM15.2763 20.1811L11.3766 14.1814L17.3776 7.60875L16.4281 6.74183L10.3802 13.3657L4.54841 11.033L19.5532 3.98986L15.2763 20.1811Z" fill="white"/>
+                  className="mt-4 me-0 w180 bg-primary border-0 border-radius-4 fs-16-500 text-white d-flex align-items-center justify-content-center"
+                >
+                  <svg
+                    className="me-2"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M20.7885 2.50872C20.6693 2.40981 20.5245 2.34679 20.3709 2.32701C20.2173 2.30723 20.0612 2.33149 19.9209 2.39698L3.08105 10.3013V11.8307L10.1541 14.6599L14.6911 21.6399H16.2208L21.0544 3.34216C21.0936 3.19231 21.0895 3.03441 21.0424 2.88685C20.9953 2.73929 20.9072 2.60815 20.7885 2.50872ZM15.2763 20.1811L11.3766 14.1814L17.3776 7.60875L16.4281 6.74183L10.3802 13.3657L4.54841 11.033L19.5532 3.98986L15.2763 20.1811Z"
+                      fill="white"
+                    />
                   </svg>
-
                   Submit
                 </Button>
               </div>

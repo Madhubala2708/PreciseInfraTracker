@@ -8,10 +8,10 @@ import { fetchProjectsByEmployee } from "../../../store/slice/inventorySlice";
 const AqsInventory = () => {
   const dispatch = useDispatch();
 
-  // ✅ Redux state for projects
+  // Redux state for projects
   const { projects, loading } = useSelector((state) => state.inventory);
 
-  // ✅ Get logged-in employeeId
+  //Get logged-in employeeId
   const employeeId = JSON.parse(localStorage.getItem("userData"))?.id;
 
   const [selectedSite, setSelectedSite] = useState("");
@@ -43,7 +43,7 @@ const AqsInventory = () => {
     },
   ]);
 
-  // ✅ Fetch Sites on page load
+  //Fetch Sites on page load
   useEffect(() => {
     dispatch(fetchProjectsByEmployee());
   }, []);
@@ -73,7 +73,7 @@ const AqsInventory = () => {
 
   return (
     <div className="page-aqs-inventory inventory-container">
-      {/* ✅ Dynamic Site Dropdown */}
+      {/*Dynamic Site Dropdown */}
       <div className="site-header">
         <div className="site-dropdown-container">
           <select className="site-dropdown">

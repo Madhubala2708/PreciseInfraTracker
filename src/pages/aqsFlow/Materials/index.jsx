@@ -5,7 +5,7 @@ import AqsNotificationTab from "./NotificationTab";
 
 const AqsMaterials = () => {
   const dispatch = useDispatch();
-  
+
   const [selectedSite, setSelectedSite] = useState("");
 
   const { projects, loading, error } = useSelector((state) => state.materials);
@@ -19,10 +19,8 @@ const AqsMaterials = () => {
       <main className="page-home d-flex">
         <div className="container-fluid">
           <div className="row">
-
             {/* Left Panel */}
             <div className="col-md-7 p-3">
-
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <select
                   className="form-select select-custom"
@@ -39,8 +37,7 @@ const AqsMaterials = () => {
                       <option key={p.projectId} value={p.projectId}>
                         {p.projectName}
                       </option>
-                    ))
-                  }
+                    ))}
                 </select>
               </div>
 
@@ -56,14 +53,19 @@ const AqsMaterials = () => {
                     <th>Required Quantity</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {/* STATIC until next API added */}
-                  <tr>
-                    <td>1</td>
-                    <td>Demo Item</td>
-                    <td>0</td>
-                    <td>0</td>
-                  </tr>
+                  {[
+                    { material: "Cement", stock: 500, required: 600 },
+                    { material: "Bricks", stock: 400, required: 500 },
+                  ].map((item, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{item.material}</td>
+                      <td>{item.stock}</td>
+                      <td>{item.required}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -9,7 +9,6 @@ export const fetchMaterialsProjects = createAsyncThunk(
   }
 );
 
-
 const materialsSlice = createSlice({
   name: "materials",
   initialState: {

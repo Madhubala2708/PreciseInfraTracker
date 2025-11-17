@@ -14,7 +14,7 @@ const Material = () => {
   const [selectedSite, setSelectedSite] = useState("");
   const [boqItems, setBoqItems] = useState([]);
 
-  // ✅ Fetch projects automatically when page loads
+  //Fetch projects automatically when page loads
   useEffect(() => {
     dispatch(fetchEngineerProjects());
   }, [dispatch]);
@@ -59,14 +59,15 @@ const Material = () => {
   };
 
   if (loading) return <p className="text-center mt-5">Loading Projects...</p>;
-  if (error) return <p className="text-danger mt-5 text-center">Error: {error}</p>;
+  if (error)
+    return <p className="text-danger mt-5 text-center">Error: {error}</p>;
 
   return (
     <Fragment>
       <main className="page-engineer-dashboard d-flex">
         <div className="left-container w-100">
           <div className="row mt-4 align-items-center">
-            {/* ✅ API-based Dropdown */}
+            {/*Dropdown */}
             <div className="col-sm-6 col-md-6 col-lg-6 text-start">
               <select
                 className="form-select select-custom"
@@ -100,8 +101,6 @@ const Material = () => {
               </Button>
             </div>
           </div>
-
-          {/* ✅ Table (unchanged) */}
           <div className="row mt-5">
             <div className="col-lg-12">
               <div className="table-responsive">
@@ -109,12 +108,22 @@ const Material = () => {
                   <thead>
                     <tr>
                       <th className="fs-16-500 text-center text-dark">S.No</th>
-                      <th className="fs-16-500 text-center text-dark">Material List</th>
-                      <th className="fs-16-500 text-center text-dark">In Stock Quantity</th>
-                      <th className="fs-16-500 text-center text-dark">Required Quantity</th>
+                      <th className="fs-16-500 text-center text-dark">
+                        Material List
+                      </th>
+                      <th className="fs-16-500 text-center text-dark">
+                        In Stock Quantity
+                      </th>
+                      <th className="fs-16-500 text-center text-dark">
+                        Required Quantity
+                      </th>
                       <th className="fs-16-500 text-center text-dark">Level</th>
-                      <th className="fs-16-500 text-center text-dark">Request Status</th>
-                      <th className="fs-16-500 text-center text-dark">Action</th>
+                      <th className="fs-16-500 text-center text-dark">
+                        Request Status
+                      </th>
+                      <th className="fs-16-500 text-center text-dark">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -125,7 +134,9 @@ const Material = () => {
                           <td className="text-center">{material.itemName}</td>
                           <td className="text-center">100</td>
                           <td className="text-center">500</td>
-                          <td className="text-center">{getLevelBadge("High")}</td>
+                          <td className="text-center">
+                            {getLevelBadge("High")}
+                          </td>
                           <td className="text-center">
                             {getStatusBadge(material.approvalStatus)}
                           </td>
@@ -134,7 +145,9 @@ const Material = () => {
                               href=""
                               style={{ color: "#0456D0" }}
                               onClick={() =>
-                                navigate(`/admin/materialview/${material.boqId}`)
+                                navigate(
+                                  `/admin/materialview/${material.boqId}`
+                                )
                               }
                             >
                               View
