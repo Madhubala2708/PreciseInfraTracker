@@ -31,16 +31,15 @@ const AqsMaterials = () => {
     dispatch(fetchMaterialStatusByProject(selectedSite));
   }, [selectedSite, dispatch]);
 
-
-
   const formatQtyForDisplay = (row) => {
-    const directIn = row?.inStockDisplay ?? row?.in_stock_display ?? row?.inStockDisplayText;
-    const directReq = row?.requiredDisplay ?? row?.required_display ?? row?.requiredDisplayText;
+    const directIn =
+      row?.inStockDisplay ?? row?.in_stock_display ?? row?.inStockDisplayText;
+    const directReq =
+      row?.requiredDisplay ?? row?.required_display ?? row?.requiredDisplayText;
     if (directIn || directReq) {
       return {
         inDisplay: directIn ?? "0 Units",
         reqDisplay: directReq ?? "0 Units",
-
       };
     }
   };
@@ -63,7 +62,10 @@ const AqsMaterials = () => {
                   {loading && <option>Loading...</option>}
                   {!loading &&
                     projects?.map((p) => (
-                      <option key={p.projectId ?? p.id} value={p.projectId ?? p.id}>
+                      <option
+                        key={p.projectId ?? p.id}
+                        value={p.projectId ?? p.id}
+                      >
                         {p.projectName ?? p.name}
                       </option>
                     ))}
@@ -83,17 +85,6 @@ const AqsMaterials = () => {
                 </thead>
 
                 <tbody>
-                  {[
-                    { material: "Cement", stock: 500, required: 600 },
-                    { material: "Bricks", stock: 400, required: 500 },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      <td>{item.material}</td>
-                      <td>{item.stock}</td>
-                      <td>{item.required}</td>
-                    </tr>
-                  ))}
                   {statusLoading ? (
                     <tr>
                       <td colSpan="4">Loading...</td>
@@ -104,7 +95,13 @@ const AqsMaterials = () => {
                       return (
                         <tr key={idx}>
                           <td>{idx + 1}</td>
-                          <td>{r.itemName ?? r.materialName ?? r.item ?? r.name ?? "N/A"}</td>
+                          <td>
+                            {r.itemName ??
+                              r.materialName ??
+                              r.item ??
+                              r.name ??
+                              "N/A"}
+                          </td>
                           <td>{inDisplay}</td>
                           <td>{reqDisplay}</td>
                         </tr>
