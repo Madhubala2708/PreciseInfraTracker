@@ -1,6 +1,4 @@
 
-// src/store/slice/inventorySlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getApprovedProjectsByEmployee,
@@ -121,6 +119,23 @@ export const fetchProjectTeam = createAsyncThunk(
     }
   }
 );
+export const ProjectTeam = createAsyncThunk(
+  "inventory/fetchProjectTeam",
+  async (projectId, thunkAPI) => {
+    try {
+      const response = await getProjectTeam(projectId);
+
+      console.log("TEAM API RAW RESPONSE →", response.data);
+
+      return response.data || [];  // DIRECT ARRAY
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Error fetching team"
+      );
+    }
+  }
+);
+
 
 
 //  SLICE
@@ -138,7 +153,7 @@ const inventorySlice = createSlice({
   reducers: {},
 
   extraReducers: (builder) => {
-    /* ------------ PROJECTS ------------ */
+   //------------ PROJECTS -----------
     builder
       .addCase(fetchProjectsByEmployee.pending, (state) => {
         state.loading = true;
@@ -152,32 +167,32 @@ const inventorySlice = createSlice({
         state.error = action.payload;
       });
 
-    /* ------------ VENDORS ------------ */
+    //------------ VENDORS ------------ 
     builder.addCase(fetchVendors.fulfilled, (state, action) => {
       state.vendors = action.payload;
     });
 
-    /* ------------ STOCK INWARD LIST ------------ */
+    // ------------ STOCK INWARD LIST ------------ 
     builder.addCase(fetchStockInwards.fulfilled, (state, action) => {
       state.stockInwards = action.payload;
     });
 
-    /* ------------ STOCK OUTWARD LIST ------------ */
+    // ------------ STOCK OUTWARD LIST ------------ 
     builder.addCase(fetchStockOutwards.fulfilled, (state, action) => {
       state.stockOutwards = action.payload;
     });
 
-    /* ------------ ADD STOCK INWARD ------------ */
+    //------------ ADD STOCK INWARD ------------
     builder.addCase(addStockInward.fulfilled, (state, action) => {
       state.stockInwards.push(action.payload);
     });
 
-    /* ------------ ADD STOCK OUTWARD ------------ */
+    //------------ ADD STOCK OUTWARD ------------ 
     builder.addCase(addStockOutward.fulfilled, (state, action) => {
       state.stockOutwards.push(action.payload);
     });
 
-    /* ------------ PROJECT TEAM ------------ */
+    //------------ PROJECT TEAM ------------ 
     builder.addCase(fetchProjectTeam.fulfilled, (state, action) => {
       state.projectTeam = action.payload;
     });
