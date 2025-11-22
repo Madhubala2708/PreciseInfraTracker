@@ -299,9 +299,7 @@ export const API = {
   // GET APIs for project-wise stock fetching
   GET_STOCK_INWARD_BY_PROJECT: "/api/Inventory/get-stock-inward-by-project",
   GET_STOCK_OUTWARD_BY_PROJECT: "/api/Inventory/get-stock-outward-by-project",
-<<<<<<< HEAD
 GET_MATERIAL_NAMES_BY_PROJECT: "/api/Material/material-names",
-=======
->>>>>>> madhu
+
 
 };
