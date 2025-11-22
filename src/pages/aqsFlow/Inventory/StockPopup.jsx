@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchVendors,
   fetchProjectTeam,
+  fetchMaterialNames,
 } from "../../../store/slice/Aqs/inventorySlice";
 
 const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) => {
@@ -11,6 +12,7 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
 
   const vendors = useSelector((state) => state.inventory.vendors || []);
   const projectTeam = useSelector((state) => state.inventory.projectTeam || []);
+  const materialNames = useSelector((state) => state.inventory.materialNames || []);
 
   const [status, setStatus] = useState("Approved");
   const [receivedDate, setReceivedDate] = useState(null);
@@ -25,134 +27,80 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
   const isOutward = title?.toLowerCase().includes("outward");
   const isViewMode = title?.toLowerCase().includes("view");
 
-  // Load team + vendors on popup open
+  // load vendors/team/materials when projectId available
   useEffect(() => {
     if (projectId) {
       dispatch(fetchProjectTeam(projectId));
       dispatch(fetchVendors());
+      dispatch(fetchMaterialNames(projectId));
     }
   }, [dispatch, projectId]);
 
-  // Fill values when popup loads (runs again after team list loads)
+  // populate fields when editing/viewing
   useEffect(() => {
-    // helper to resolve a team member name by many possible id keys
-    const findPersonNameById = (id) => {
-      if (id === undefined || id === null || id === "") return "";
-      const strId = String(id);
-      const t = projectTeam.find(
-        (p) =>
-          String(p.empId) === strId ||
-          String(p.employeeId) === strId ||
-          String(p.id) === strId
-      );
-      return t ? (t.fullName || t.employeeName || t.name || "") : "";
-    };
-
     if (data) {
-      // Basic fields
       setGrnNo(data.grn || data.issueNo || "");
       setProject(data.projectName || projectName || "");
       setItemName(data.itemName || data.itemname || data.item || "");
-
       setQuantity(
         data.quantityReceived ??
-        data.receivedQuantity ??
-        data.issuedQuantity ??
-        data.quantity ??
-        ""
+          data.receivedQuantity ??
+          data.issuedQuantity ??
+          data.quantity ??
+          ""
       );
 
-      // Date field
-      const rawDate = data.dateReceived || data.dateIssued || data.date || null;
+      const rawDate = data.dateReceived || data.dateIssued || data.date;
       if (rawDate) {
         const parsed = new Date(rawDate);
         if (!isNaN(parsed)) setReceivedDate(parsed);
       }
-
       setStatus(data.status || "Approved");
 
-      // MAP BOTH INWARD & OUTWARD
       if (isOutward) {
-        // OUTWARD → try to resolve names by id first, then fallback to text fields
-        const issuedToName =
-          findPersonNameById(data.issuedToId) ||
-          data.issuedToName ||
-          data.issuedTo ||
-          "";
-        setVendor(issuedToName);
-
-        const requestedByName =
-          findPersonNameById(data.requestedById) ||
-          data.requestedByName ||
-          data.requestedBy ||
-          "";
-        setReceivedBy(requestedByName);
+        setVendor(data.issuedToId || "");
+        setReceivedBy(data.requestedById || "");
       } else {
-        // INWARD → check id fields first, then name fields (covers multiple API shapes)
-        const receivedByFromId =
-          findPersonNameById(data.receivedById) ||
-          findPersonNameById(data.received_by) ||
-          findPersonNameById(data.received_employee_id) ||
-          "";
-
-        const receivedByFallback =
-          data.receivedByName ||
-          data.receivedbyname ||
-          data.received_employee_name ||
-          data.receivedEmployeeName ||
-          data.receivedName ||
-          data.received ||
-          data.receivedBy ||
-          "";
-
-        setReceivedBy(receivedByFromId || receivedByFallback);
-
-        setVendor(
-          data.vendorName ||
-          data.vendorname ||
-          data.vendor ||
-          ""
-        );
+        setVendor(data.vendorId || "");
+        setReceivedBy(data.receivedById || "");
       }
     } else {
-      // NEW RECORD MODE
       const random = Math.floor(1000 + Math.random() * 9000);
       setGrnNo(isInward ? `GRN-${random}` : `ISS-${random}`);
       setProject(projectName || "");
       setReceivedDate(new Date());
     }
-  }, [data, projectName, isInward, isOutward, projectTeam]);
+  }, [data, projectName, isInward, isOutward]);
 
-  // Submit logic
+  // submit handler
   const handleSubmit = () => {
     if (isViewMode) return onClose();
 
-    if (!itemName || !quantity || !vendor || !receivedBy) {
+    if (!itemName || !quantity || !receivedBy) {
       alert("Please fill all required fields.");
       return;
     }
 
     const formattedDate = receivedDate ? receivedDate.toISOString() : null;
-    const engineer = projectTeam.find(t => t.fullName === receivedBy);
 
     const newStock = isInward
       ? {
           projectId,
           grn: grnNo,
-          itemName,
-          vendorId: vendors.find(v => v.vendorName === vendor)?.id || null,
+          itemName: itemName,
+          vendorId: vendor,
           quantityReceived: Number(quantity),
           dateReceived: formattedDate,
-          receivedById: engineer?.empId || null,
+          receivedById: receivedBy,
           status,
         }
       : {
           projectId,
           issueNo: grnNo,
-          itemName,
-          requestedById: engineer?.empId || null,
+          itemName: itemName,
+          requestedById: receivedBy,
+          issuedToId: vendor,
           issuedQuantity: Number(quantity),
-          issuedToId: engineer?.empId || null,
           dateIssued: formattedDate,
           status,
         };
@@ -160,16 +108,44 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
     onSubmit(newStock);
   };
 
+  // helper to render options for materialNames (supports string[] or object[])
+  const renderMaterialOptions = () => {
+    if (!materialNames || materialNames.length === 0) return null;
+
+    return materialNames.map((m, idx) => {
+      // case: array of strings
+      if (typeof m === "string") {
+        return (
+          <option key={`mat-${m}-${idx}`} value={m}>
+            {m}
+          </option>
+        );
+      }
+
+      // otherwise object: try common keys
+      const key = m.materialId || m.id || m.material_id || idx;
+      const value = m.materialName || m.name || m.material || m.value || "";
+      const label = value || JSON.stringify(m);
+
+      return (
+        <option key={`mat-${key}`} value={value}>
+          {label}
+        </option>
+      );
+    });
+  };
+
   return (
     <div className="popup-overlay">
       <div className="popup-box">
         <div className="popup-header">
           <h4>{title}</h4>
-          <button className="close-btn" onClick={onClose}>×</button>
+          <button className="close-btn" onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <form className="popup-form" onSubmit={(e) => e.preventDefault()}>
-          
           {/* Row 1 */}
           <div className="form-row">
             <div className="form-group">
@@ -193,12 +169,7 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
                 disabled={isViewMode}
               >
                 <option value="">Select Item</option>
-                <option value="Cement (50kg)">Cement (50kg)</option>
-                <option value="Steel Rods (50mm)">Steel Rods (50mm)</option>
-                <option value="PVC Pipes">PVC Pipes</option>
-                <option value="Wire (4mm)">Wire (4mm)</option>
-                <option value="Bricks">Bricks</option>
-                <option value="Sand">Sand</option>
+                {renderMaterialOptions()}
               </select>
             </div>
 
@@ -209,7 +180,7 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 disabled={isViewMode}
-                placeholder="Eg. bags, Units"
+                placeholder="Eg. Bags, Units"
               />
             </div>
           </div>
@@ -223,16 +194,18 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
                 onChange={(e) => setVendor(e.target.value)}
                 disabled={isViewMode}
               >
-                <option value="">
-                  {isInward ? "Select Vendor" : "Select Engineer"}
-                </option>
+                <option value="">{isInward ? "Select Vendor" : "Select Engineer"}</option>
 
                 {isInward
-                  ? vendors.map(v => (
-                      <option key={v.id} value={v.vendorName}>{v.vendorName}</option>
+                  ? vendors.map((v) => (
+                      <option key={v.id || v.vendorId || v.empId} value={v.id || v.vendorId || v.empId}>
+                        {v.vendorName || v.name || v.fullName || "Vendor"}
+                      </option>
                     ))
-                  : projectTeam.map(t => (
-                      <option key={t.empId} value={t.fullName}>{t.fullName}</option>
+                  : projectTeam.map((p) => (
+                      <option key={p.empId} value={p.empId}>
+                        {p.fullName}
+                      </option>
                     ))}
               </select>
             </div>
@@ -258,19 +231,17 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
                 disabled={isViewMode}
               >
                 <option value="">Select Engineer</option>
-                {projectTeam.map(t => (
-                  <option key={t.empId} value={t.fullName}>{t.fullName}</option>
+                {projectTeam.map((t) => (
+                  <option key={t.empId} value={t.empId}>
+                    {t.fullName}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="form-group">
               <label>Status</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                disabled={isViewMode}
-              >
+              <select value={status} onChange={(e) => setStatus(e.target.value)} disabled={isViewMode}>
                 <option value="Approved">Approved</option>
                 <option value="Pending">Pending</option>
                 <option value="Rejected">Rejected</option>
@@ -284,7 +255,6 @@ const StockPopup = ({ title, onClose, onSubmit, data, projectId, projectName }) 
               {isViewMode ? "Close" : "Update"}
             </button>
           </div>
-
         </form>
       </div>
     </div>
