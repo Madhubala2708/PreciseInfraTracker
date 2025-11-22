@@ -595,7 +595,7 @@ const EngineerTicketDetails = () => {
       console.error("Invalid ticket object:", ticket);
       return;
     }
-  
+
     navigate(`../engineermaterialview/${ticket.transaction_id}`);
   };
   return (
