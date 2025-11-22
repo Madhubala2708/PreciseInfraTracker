@@ -286,9 +286,7 @@ export const API = {
 
   /**INVENTORY & MATERIALS - SITES */
 
-  GET_APPROVED_PROJECTS_BY_EMPLOYEE:
-    "/api/Project/get-approved-projects-by-employee",
-
+  GET_APPROVED_PROJECTS_BY_EMPLOYEE: "/api/Project/get-approved-projects-by-employee",
   GET_ENGINEER_MATERIALS_BY_PROJECT: "/api/Material/my-project/materials",
   GET_MATERIAL_STOCK_ALERTS: "/api/MaterialStockAlerts/my-project/alerts",
   GET_MATERIAL_STATUS_BY_PROJECT: "/api/Material/Materialstatus/", // append {projectId}
@@ -301,6 +299,9 @@ export const API = {
   // GET APIs for project-wise stock fetching
   GET_STOCK_INWARD_BY_PROJECT: "/api/Inventory/get-stock-inward-by-project",
   GET_STOCK_OUTWARD_BY_PROJECT: "/api/Inventory/get-stock-outward-by-project",
+<<<<<<< HEAD
 GET_MATERIAL_NAMES_BY_PROJECT: "/api/Material/material-names",
+=======
+>>>>>>> madhu
 
 };

@@ -202,6 +202,34 @@ const MaterialCreateScreen = () => {
       setValidationErrors({ ...validationErrors, approver: false });
     }
   };
+
+  const getApproverIds = () => {
+    return selectedApprover
+      .map((approver) => {
+        if (!approver) return null;
+        const rawValue =
+          approver.empId ??
+          approver.value ??
+          approver.id ??
+          (typeof approver === "number" || typeof approver === "string"
+            ? approver
+            : null);
+
+        if (rawValue === null || rawValue === undefined) return null;
+
+        if (typeof rawValue === "string") {
+          return rawValue.trim();
+        }
+
+        return rawValue;
+      })
+      .filter(
+        (id) =>
+          id !== null &&
+          id !== undefined &&
+          !(typeof id === "string" && id.length === 0)
+      );
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -220,11 +248,37 @@ const MaterialCreateScreen = () => {
       return;
     }
 
+    const normalizedVendorId = Number(selectedVendorId);
+    if (Number.isNaN(normalizedVendorId) || normalizedVendorId <= 0) {
+      toast.error("Invalid vendor selected. Please choose a valid vendor.");
+      return;
+    }
+
+    if (!projectId) {
+      toast.error(
+        "Unable to determine project context. Please reopen the material module."
+      );
+      return;
+    }
+
+    const approverIds = getApproverIds();
+    const numericApproverIds = approverIds
+      .map((id) => {
+        if (typeof id === "number") return id;
+        const parsed = Number(id);
+        return Number.isNaN(parsed) ? null : parsed;
+      })
+      .filter((id) => id !== null);
+
+    if (!numericApproverIds.length) {
+      toast.error("Selected approvers are invalid. Please reselect and try again.");
+      return;
+    }
     const boqPayload = {
-      empId: empData?.empId,
+      empId: Number(empData?.empId),
       boqId: 0,
       boqName: title,
-      boqCode: boqId.toString(),
+      boqCode: boqId?.toString?.() || "",
       boqDescription: "",
       boqItems: rows.map((row) => ({
         boqItemsId: 0,
@@ -233,41 +287,69 @@ const MaterialCreateScreen = () => {
         price: parseFloat(row.rate) || 0,
         quantity: parseFloat(row.quantity) || 0,
       })),
-      assignTo: selectedApprover.map((emp) => emp.empId),
+      assignTo: numericApproverIds,
       ticketType: "BOQ_APPROVAL",
-      vendorId: parseInt(selectedVendorId),
+      vendorId: normalizedVendorId,
+      projectId,
     };
 
     try {
       // Step 1: Create BOQ
-      const boqResponse = await dispatch(upsertBoq(boqPayload));
+      const boqResponse = await dispatch(upsertBoq(boqPayload)).unwrap();
       console.log("BOQ Response:", boqResponse);
 
-      if (boqResponse?.payload?.success) {
+      if (boqResponse?.success) {
         toast.success("BOQ created successfully.");
-        const boqId = boqResponse?.payload?.data?.boqId;
+        const createdBoqId =
+          Number(
+            boqResponse?.data?.boqId ??
+            boqResponse?.data?.boqID ??
+            boqResponse?.boqId ??
+            boqResponse?.boqID
+          ) || null;
+
+        if (!createdBoqId) {
+          toast.error(
+            "BOQ created but no BOQ ID was returned. Please contact support."
+          );
+          return;
+        }
 
         // Step 2: Create Ticket with error handling
         try {
-          const ticketResponse = await createTicket({
-            boqId: boqId,
+          const ticketPayload = {
+            ticketName: title,          // REQUIRED
+            ticketDescription: `BOQ approval request for ${title}`,
+            projectId,
+            vendorId: normalizedVendorId,
+            boqId: Number(createdBoqId),
             ticketType: "BOQ_APPROVAL",
-            assignTo: selectedApprover.map((emp) => emp.empId),
-            createdBy: empData?.empId,
-          });
+            assignTo: numericApproverIds.map(Number).filter(x => !isNaN(x)),
+            createdBy: Number(empData?.empId),
+          };
 
-          console.log("Ticket Response:", ticketResponse);
 
-          if (ticketResponse?.data?.success) {
+          console.group("BOQ Ticket Creation");
+          console.log("Payload:", ticketPayload);
+          console.log("Project ID sent:", projectId);
+          console.log("Approver IDs:", numericApproverIds);
+
+
+
+          const ticketResponse = await createTicket(ticketPayload);
+          console.log("Response:", ticketResponse);
+
+          const ticketApiResponse = ticketResponse?.data;
+          if (ticketResponse?.success && ticketApiResponse?.success) {
             toast.success("Ticket created successfully.");
 
-            const ticketId = ticketResponse?.data?.data?.ticketId;
-            const projectName = ticketResponse?.data?.data?.projectName;
+            const ticketId = ticketApiResponse?.data?.ticketId;
+            const projectName = ticketApiResponse?.data?.projectName;
 
             // Step 3: Send Notification
             try {
               await createNotify({
-                empId: selectedApprover.map((emp) => emp.empId),
+                empId: numericApproverIds,
                 notificationType: "Material Requirement(BOQ)",
                 sourceEntityId: ticketId,
                 message: `We would like to update you that we are currently awaiting BOQ on the material requirement submitted for ${projectName} Project. Kindly review and provide BOQ at the earliest to avoid any delays in the process.`,
@@ -299,6 +381,7 @@ const MaterialCreateScreen = () => {
               if (hasAqs) {
                 navigate("/aqs/aqsapprovals", {
                   state: {
+
                     from: "engineer",
                     ticketId,
                     flow: selectedApprover.map((a) => a.empId),
@@ -307,6 +390,7 @@ const MaterialCreateScreen = () => {
               }
             } catch (err) {
               console.error("Navigation Error:", err);
+
             }
 
             // Reset form
@@ -317,6 +401,7 @@ const MaterialCreateScreen = () => {
             setSelectedVendorId("");
             setSelectedApprover([]);
           } else {
+
             // If ticket creation fails, still show BOQ success
             toast.error(
               ticketResponse?.data?.message || "Ticket creation failed."
@@ -327,8 +412,11 @@ const MaterialCreateScreen = () => {
             setTimeout(() => {
               navigate("/admin/engineermaterial");
             }, 1500);
+
           }
+          console.groupEnd();
         } catch (ticketError) {
+
           // Catch ticket creation error
           console.error("Ticket API Error:", ticketError);
           toast.error("Ticket creation failed. Please contact support.");
@@ -337,6 +425,7 @@ const MaterialCreateScreen = () => {
           setTimeout(() => {
             navigate("/admin/engineermaterial");
           }, 1500);
+
         }
       } else {
         toast.error(boqResponse?.payload?.message || "BOQ creation failed.");
@@ -440,7 +529,7 @@ const MaterialCreateScreen = () => {
                       onChange={(e) => setSelectedVendorId(e.target.value)}
                     >
                       {" "}
-                      <option>Select Vendor</option>
+                      <option value="">Select Vendor</option>
                       {vendors.map((vendor) => (
                         <option key={vendor.id} value={vendor.id}>
                           {vendor.vendorName}
