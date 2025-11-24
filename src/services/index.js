@@ -5,6 +5,8 @@ import updatesAPI from "./updatesAPI";
 import { API } from "../constant/service";
 import { objectToQueryString } from "../utils/common";
 import { engineerMaterialsAPI } from "./engineerMaterialsAPI";
+import axios from "axios";
+import { getAuthToken } from "../utils/storage";
 
 /**
  *
@@ -53,8 +55,8 @@ export const createProjectTeam = (params) =>
   api.POST(API.CREATE_PROJECT_TEAM, params);
 export const crateFinanceApproved = (params) =>
   api.POST(API.CREATE_FINACIAL_APPROVAL, params);
-export const createProjectMilestone = (params) =>
-  api.POST(API.CREATE_PROJECT_MILESTONE, params);
+// export const createProjectMilestone = (params) =>
+//   api.POST(API.CREATE_PROJECT_MILESTONE, params);
 export const createUploadFiles = (params) =>
   api.POST(API.UPSERTRISK_UPLOAD, params);
 /** Tickets Comments Create */
@@ -573,3 +575,96 @@ export {
   getMaterialProjects,
   getMaterialStatusByProject,
 } from "./aqsmaterialsAPI";
+
+
+
+
+
+
+// Helper to attach token in all milestone APIs
+const authHeader = () => {
+  const token = localStorage.getItem("accessToken") || getAuthToken();
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
+
+/* ---------------------------------------------
+   MILSTONE MASTER
+--------------------------------------------- */
+
+// GET all Milestone Master
+export const getMileStoneList = () => {
+  return axios.get(API.GET_MILESTONE_MASTER_LIST, authHeader());
+};
+
+// CREATE Milestone Master
+export const createMileStone = (data) => {
+  return axios.post(API.CREATE_MILESTONE_MASTER, data, authHeader());
+};
+
+// UPDATE Milestone Master
+export const updateMileStone = (data) => {
+  return axios.put(API.UPDATE_MILESTONE_MASTER, data, authHeader());
+};
+
+// DELETE Milestone Master
+export const deleteMileStone = (id) => {
+  return axios.delete(`${API.DELETE_MILESTONE_MASTER}?id=${id}`, authHeader());
+};
+
+
+/* ---------------------------------------------
+   PROJECT STATUS MASTER
+--------------------------------------------- */
+
+export const getProjectStatusMaster = () => {
+  return axios.get(API.GET_PROJECT_STATUS_LIST, authHeader());
+};
+
+
+/* ---------------------------------------------
+   TASK STATUS MASTER
+--------------------------------------------- */
+
+export const getTaskStatusMaster = () => {
+  return axios.get(API.GET_TASK_STATUS_LIST, authHeader());
+};
+
+
+/* ---------------------------------------------
+   PROJECT MILESTONE
+--------------------------------------------- */
+
+// CREATE Project Milestone (not master)
+export const createProjectMilestone = (data) => {
+  return axios.post(API.CREATE_MILESTONE, data, authHeader());
+};
+
+// DELETE Project Milestone
+export const deleteProjectMilestone = (id) => {
+  return axios.delete(`${API.DELETE_MILESTONE}?id=${id}`, authHeader());
+};
+
+
+/* ---------------------------------------------
+   MILESTONE TASK (for project)
+--------------------------------------------- */
+
+// CREATE Milestone Task
+export const createMileStoneTask = (data) => {
+  return axios.post(API.CREATE_MILESTONE_TASK, data, authHeader());
+};
+
+// UPDATE Milestone Task
+export const updateMileStoneTask = (data) => {
+  return axios.put(API.UPDATE_MILESTONE_TASK, data, authHeader());
+};
+
+// DELETE Milestone Task
+export const deleteMileStoneTask = (taskId) => {
+  return axios.delete(`${API.DELETE_MILESTONE_TASK}?id=${taskId}`, authHeader());
+};
+
