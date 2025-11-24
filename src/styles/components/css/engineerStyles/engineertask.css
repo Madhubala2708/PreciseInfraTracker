@@ -52,15 +52,42 @@
   width: 99%;
 }
 
-.page-add-task .left-container>.row {
+.page-add-task .left-container > .row {
   padding: 20px;
 }
-
-
 
 @media (max-width: 1440px) {
   main.page-add-task .left-container {
     width: 100%;
     max-width: 100%;
+  }
+}
+
+.addTask.loading {
+  opacity: 0.7;
+  pointer-events: none; /* Prevent clicking */
+  position: relative;
+}
+
+.addTask.loading::after {
+  content: " ";
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@keyframes spin {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
   }
 }

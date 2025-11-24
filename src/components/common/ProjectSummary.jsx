@@ -13,6 +13,7 @@ import { useRoleBasedEmp } from "../../hooks/Ceo/useRoleBasedEmp";
 import { useTicket } from "../../hooks/Ceo/useTicket";
 import { useNotification } from "../../hooks/Ceo/useNotification";
 import { useProject } from "../../hooks/Ceo/useCeoProject";
+import { useProjectStatusMaster } from "../../hooks/useMaster";
 const BASE_URL = process.env.REACT_APP_MASTER_API_BASE_URL;
 const ProjectSummary = ({ formData, onBackClick }) => {
   const { projectId } = useParams();
@@ -34,7 +35,13 @@ const ProjectSummary = ({ formData, onBackClick }) => {
 
   const [projectTypes, setProjectTypes] = useState({});
   const [projectSectors, setProjectSectors] = useState({});
-
+const [{ projectStatusDataList }, { getProjectStatusList }] =
+    useProjectStatusMaster();
+  useEffect(() => {
+    if (projectStatusDataList.data.length === 0) {
+      getProjectStatusList();
+    }
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -215,10 +222,8 @@ const ProjectSummary = ({ formData, onBackClick }) => {
   const getProjectTypeName = () => {
     const typeId = projectData?.project?.project_type_id;
     if (!typeId) return "";
-    return (
-      PROJECT_TYPES[typeId] ||
-      projectData?.project?.project_type_name ||
-      ""
+     return (
+      PROJECT_TYPES[typeId] || projectData?.project?.project_type_name || ""
     );
   };
 
@@ -582,8 +587,10 @@ const ProjectSummary = ({ formData, onBackClick }) => {
               <label className="text-dark fs-26-700 mb-2">Attention To</label>
               
               <Form.Group>
-                
-                <Form.Select disabled className="bg-white text-dark-gray h48px fs-16-500  border-radius-4 border-color-silver-gray">
+                <Form.Select
+                  disabled
+                  className="bg-white text-dark-gray h48px fs-16-500  border-radius-4 border-color-silver-gray"
+                >
                   <option value="">Select Team</option>
                 </Form.Select>
               </Form.Group>
@@ -912,13 +919,9 @@ const ProjectSummary = ({ formData, onBackClick }) => {
                   <td className="text-center text-dark-gray fs-16-500">
                     {formatDate(milestone.milestone_end_date)}
                   </td>
-                  <td className="text-center text-dark-gray fs-16-500">
-                    <span>
-                      {milestone.milestone_status?.toLowerCase() === "completed"
-                        ? "✅"
-                        : ""}
-                      {displayValue(milestone.milestone_status)}
-                    </span>
+                   <td className="text-center text-dark-gray fs-16-500">
+                    <span>{displayValue(projectStatusDataList?.data.filter((status) => 
+                          status.id ===milestone.milestone_status)[0]?.name)}</span>
                   </td>
                   <td className="text-center text-dark-gray fs-16-500">
                     {displayValue(milestone.remarks)}

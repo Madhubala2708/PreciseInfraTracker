@@ -17,14 +17,13 @@ export const API = {
   GET_TICKET_BY_ID: "/api/Ticket/get-ticket-by-id",
   GET_TICKET_LABELS: "/api/Login/labels-with-tickets",
   CREATE_NEW_TICKET_TASK: "/api/Ticket/create-custom-ticket",
-  UPDATE_PROJECT_APPROVAL: '/api/Ticket/update-ticket-by-id',
+  UPDATE_PROJECT_APPROVAL: "/api/Ticket/update-ticket-by-id",
   UPSERTRISK_UPLOAD: "/api/Project/upsertRisk",
   //department //
   GET_DEPARTMENTS: "/api/Department/get-department",
   GET_DEPARTMENTS_BY_ID: "/api/Login/getEmployeesByDepartment/",
   /*PM FLOW  */
   GET_PROJECT_DETAILS: "/api/Project/getProjectDetails",
-
 
   /* Employee data */
   GET_EMPLOYEES_BY_ROLES: "/api/Login/getEmployeesByRoles",
@@ -34,7 +33,7 @@ export const API = {
   CREATE_NOTIFICATION: "/api/Notification/create-notification",
   GET_NOTIFICATION: "/api/Notification/get-notification",
   //Ticket Comment Create
-  CREATE_TICKET_DETAILS: '/api/Ticket/add-comment-attachment',
+ CREATE_TICKET_DETAILS: "/api/Ticket/add-comment-attachment",
 
   /** KANBAN */
   GET_ALL_BOARD: "/api/BoardManagement/boards",
@@ -50,12 +49,12 @@ export const API = {
   GET_FILTERED_BOARD_DATA: "/api/BoardManagement/boardfilter",
   GET_FILTERED_UPDATE_BOARD_DATA: "/api/UpdatesBoardList/boardfilter",
   /** GET BOQ ITEMS BY ID */
-  GET_BOQ_ITEMS_BY_ID: '/api/Project/boq-items',
+  GET_BOQ_ITEMS_BY_ID: "/api/Project/boq-items",
   // LOGIN BOARD DETAILS 
-  LOGIN_BOARD_DETAILS: '/api/Login/board-details',
+  LOGIN_BOARD_DETAILS: "/api/Login/board-details",
   /** GET PURCHASE ORDER DETAILS */
-  GET_PURCHASE_ORDER_DETAILS: '/api/Vendor/Getpurchase-order-details',
-  GET_BOQCODE: '/api/Project/getBoqDetailsBy-BOQCode',
+   GET_PURCHASE_ORDER_DETAILS: "/api/Vendor/Getpurchase-order-details",
+  GET_BOQCODE: "/api/Project/getBoqDetailsBy-BOQCode",
 
   //** BOQ Get DATA ***/
   GET_BOQ_DETAILS: "/api/Project/getBoqDetails",
@@ -117,6 +116,25 @@ export const API = {
   ADD_CURRENCY: "/api/Currency/add",
   UPDATE_CURRENCY: "/api/Currency/update",
   DELETE_CURRENCY: "/api/Currency/delete",
+
+  /*** MilestoneMaster **/
+  GET_MILESTONE_MASTER_LIST: "/api/MilestoneMaster/allmilestonemaster",
+  CREATE_MILESTONE_MASTER: "/api/MilestoneMaster/create_milestoneMaster",
+  UPDATE_MILESTONE_MASTER: "/api/MilestoneMaster/update_milestoneMaster",
+  DELETE_MILESTONE_MASTER: "/api/MilestoneMaster/delete_milestoneMaster_by_id",
+  /** ProjectStatusMaster **/
+  GET_PROJECT_STATUS_LIST: "/api/MilestoneMaster/project_status_master",
+  /**TaskStatusMaster**/
+  GET_TASK_STATUS_LIST: "/api/MilestoneMaster/task_status_master",
+
+  /** Milestone **/
+  CREATE_MILESTONE: "/api/MilestoneMaster/project/createMilestone",
+  DELETE_MILESTONE: "/api/MilestoneMaster/project/DeleteMilestone",
+
+   /*** MilestoneTask **/
+  CREATE_MILESTONE_TASK: "/api/MilestoneMaster/createTaskMilestone",
+  UPDATE_MILESTONE_TASK: "/api/MilestoneMaster/updateTaskMilestone",
+  DELETE_MILESTONE_TASK: "/api/MilestoneMaster/deleteTaskMilestone",
 
   /*** My Team **/
   GET_MY_TEAM_MEMBER: "/api/User/userteams",
