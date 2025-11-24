@@ -70,6 +70,8 @@ const EngineerTicketDetails = () => {
     fetchEmployeesByDepartment,
   } = useDepartments();
 
+  
+
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -145,6 +147,50 @@ const EngineerTicketDetails = () => {
       ],
     },
   ]);
+
+  // 🔄 Auto refresh ticket details on page load
+useEffect(() => {
+  const ticketId =
+    location?.state?.ticket?.ticket_id ||
+    location?.state?.ticket_id ||
+    ticketDetails?.ticket_id;
+
+  if (ticketId) {
+    dispatch(getticketbyidAction(ticketId))
+      .unwrap()
+      .then((data) => {
+        setTicketDetails(data);
+      })
+      .catch((err) => {
+        console.error("Auto-refresh failed:", err);
+      });
+  }
+}, []); // <-- run ONCE on page load
+
+
+useEffect(() => {
+  const ticketId =
+    location?.state?.ticket?.ticket_id ||
+    location?.state?.ticket_id ||
+    ticket?.ticket_id;
+
+  if (!ticketId) return;
+
+  setIsLoading(true);
+
+  dispatch(getticketbyidAction(ticketId))
+    .unwrap()
+    .then((latest) => {
+      setTicketDetails(latest);
+    })
+    .catch((err) => {
+      console.error("Auto-refresh failed:", err);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+}, []);
+
 
   // Date state management
   const [orderDate, setOrderDate] = useState(

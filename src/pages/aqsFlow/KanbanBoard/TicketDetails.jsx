@@ -70,6 +70,18 @@ const EngineerTicketDetails = () => {
     fetchEmployeesByDepartment,
   } = useDepartments();
 
+  // Auto refresh ticket details when coming back from approval
+useEffect(() => {
+  if (location.state?.refreshBoard) {
+    dispatch(getticketbyidAction(ticketDetails?.ticket_id))
+      .unwrap()
+      .then((updated) => {
+        setTicketDetails(updated);
+      });
+  }
+}, [location.state]);
+
+
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -251,6 +263,8 @@ const EngineerTicketDetails = () => {
     loadDepartments();
   }, []);
 
+  
+
   // Handle department selection
   const handleDepartmentChange = async (dept) => {
     setCurrentDepartment(dept);
@@ -354,7 +368,18 @@ const EngineerTicketDetails = () => {
       ).unwrap();
 
       if (result.success) {
-        showToastNotification("Ticket updated successfully");
+        showToastNotification("Ticket approved");
+        navigate("/approvals", { state: { refreshBoard: true } });
+
+        await dispatch(getticketbyidAction(payload.ticketId))
+  .unwrap()
+  .then((updated) => {
+    setTicketDetails(updated); // this updates UI immediately
+  });
+
+
+
+
 
         // Refetch the updated ticket
         const updatedData = await dispatch(
@@ -595,8 +620,7 @@ const EngineerTicketDetails = () => {
     ).unwrap();
 
     navigate(
-      `../engineermaterialview/${
-        location?.state?.boqId || ticketId?.transaction_id
+      `../engineermaterialview/${location?.state?.boqId || ticketId?.transaction_id
       }`
     );
   };
@@ -759,7 +783,7 @@ const EngineerTicketDetails = () => {
                       <Button
                         variant="link"
                         className="text-muted p-1"
-                        onClick={() => {}}
+                        onClick={() => { }}
                       >
                         <BsLink />
                       </Button>
@@ -826,9 +850,8 @@ const EngineerTicketDetails = () => {
               >
                 <Nav.Item>
                   <Nav.Link
-                    className={`px-3 py-2 ${
-                      activeTab === "all" ? "text-white" : "text-dark"
-                    }`}
+                    className={`px-3 py-2 ${activeTab === "all" ? "text-white" : "text-dark"
+                      }`}
                     onClick={() => handleTabChange("all")}
                     style={{
                       borderRadius: "4px 4px 0 0",
@@ -841,11 +864,10 @@ const EngineerTicketDetails = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link
-                    className={`px-3 py-2 ${
-                      activeTab === "approvalstatus"
-                        ? "text-white"
-                        : "text-dark"
-                    }`}
+                    className={`px-3 py-2 ${activeTab === "approvalstatus"
+                      ? "text-white"
+                      : "text-dark"
+                      }`}
                     onClick={() => handleTabChange("approvalstatus")}
                     style={{
                       borderRadius: "4px 4px 0 0",
@@ -861,9 +883,8 @@ const EngineerTicketDetails = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link
-                    className={`px-3 py-2 ${
-                      activeTab === "comments" ? "text-white" : "text-dark"
-                    }`}
+                    className={`px-3 py-2 ${activeTab === "comments" ? "text-white" : "text-dark"
+                      }`}
                     onClick={() => handleTabChange("comments")}
                     style={{
                       borderRadius: "4px 4px 0 0",
@@ -876,9 +897,8 @@ const EngineerTicketDetails = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link
-                    className={`px-3 py-2 ${
-                      activeTab === "files" ? "text-white" : "text-dark"
-                    }`}
+                    className={`px-3 py-2 ${activeTab === "files" ? "text-white" : "text-dark"
+                      }`}
                     onClick={() => handleTabChange("files")}
                     style={{
                       borderRadius: "4px 4px 0 0",
@@ -891,9 +911,8 @@ const EngineerTicketDetails = () => {
                 </Nav.Item>
                 <Nav.Item>
                   <Nav.Link
-                    className={`px-3 py-2 ${
-                      activeTab === "history" ? "text-white" : "text-dark"
-                    }`}
+                    className={`px-3 py-2 ${activeTab === "history" ? "text-white" : "text-dark"
+                      }`}
                     onClick={() => handleTabChange("history")}
                     style={{
                       borderRadius: "4px 4px 0 0",
@@ -1072,19 +1091,19 @@ const EngineerTicketDetails = () => {
 
                 {comments.flatMap((comment) => comment.files || []).length ===
                   0 && (
-                  <div className="text-center py-5 text-muted">
-                    <BsPaperclip size={32} />
-                    <p className="mt-2">No files attached yet</p>
-                    <Button
-                      variant="outline-warning"
-                      style={{ backgroundColor: "#FF6F00", color: "white" }}
-                      size="sm"
-                      onClick={() => fileInputRef.current.click()}
-                    >
-                      Upload File
-                    </Button>
-                  </div>
-                )}
+                    <div className="text-center py-5 text-muted">
+                      <BsPaperclip size={32} />
+                      <p className="mt-2">No files attached yet</p>
+                      <Button
+                        variant="outline-warning"
+                        style={{ backgroundColor: "#FF6F00", color: "white" }}
+                        size="sm"
+                        onClick={() => fileInputRef.current.click()}
+                      >
+                        Upload File
+                      </Button>
+                    </div>
+                  )}
 
                 <div className="row">
                   {comments
@@ -1121,19 +1140,19 @@ const EngineerTicketDetails = () => {
 
                 {comments.flatMap((comment) => comment.images || []).length ===
                   0 && (
-                  <div className="text-center py-5 text-muted">
-                    <BsImage size={32} />
-                    <p className="mt-2">No images attached yet</p>
-                    <Button
-                      variant="outline-warning"
-                      style={{ backgroundColor: "#FF6F00", color: "white" }}
-                      size="sm"
-                      onClick={() => imageInputRef.current.click()}
-                    >
-                      Upload Image
-                    </Button>
-                  </div>
-                )}
+                    <div className="text-center py-5 text-muted">
+                      <BsImage size={32} />
+                      <p className="mt-2">No images attached yet</p>
+                      <Button
+                        variant="outline-warning"
+                        style={{ backgroundColor: "#FF6F00", color: "white" }}
+                        size="sm"
+                        onClick={() => imageInputRef.current.click()}
+                      >
+                        Upload Image
+                      </Button>
+                    </div>
+                  )}
 
                 <div className="row">
                   {comments
@@ -1543,8 +1562,8 @@ const EngineerTicketDetails = () => {
                     {currentEmployee
                       ? currentEmployee.employeeName
                       : currentDepartment
-                      ? currentDepartment.deptName
-                      : "Select Move To"}
+                        ? currentDepartment.deptName
+                        : "Select Move To"}
                   </p>
                 </div>
               ) : null}
@@ -1555,22 +1574,20 @@ const EngineerTicketDetails = () => {
               <span className="text-muted">Action</span>
               <div className="d-flex align-items-center">
                 <button
-                  className={`btn me-2 ${
-                    approvalStatus === "Rejected"
-                      ? "btn-danger"
-                      : "btn-outline-danger"
-                  }`}
+                  className={`btn me-2 ${approvalStatus === "Rejected"
+                    ? "btn-danger"
+                    : "btn-outline-danger"
+                    }`}
                   onClick={() => handleApproval("Rejected")}
                   disabled={isLoading}
                 >
                   Reject
                 </button>
                 <button
-                  className={`btn ${
-                    approvalStatus === "Approved"
-                      ? "btn-success"
-                      : "btn-outline-success"
-                  }`}
+                  className={`btn ${approvalStatus === "Approved"
+                    ? "btn-success"
+                    : "btn-outline-success"
+                    }`}
                   onClick={() => handleApproval("Approved")}
                   disabled={isLoading}
                 >

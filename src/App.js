@@ -100,6 +100,8 @@ const EngineerSetting = lazy(() =>
   import("./pages/engineerFlow/Settings/index")
 );
 
+
+
 // AQS FLOW
 
 const AqsDashboard = lazy(() => import("./pages/aqsFlow/Dashboard/index"));
@@ -691,6 +693,11 @@ const App = () => {
             path="engineermaterialcreate"
             element={<EngineerMaterialCreate />}
           />
+          <Route
+  path="engineerticketdetails/:ticketId"
+  element={<EngineerTicketDetails />}
+/>
+
           <Route path="engineertask" element={<EngineerTask />} />
           <Route
             path="engineerreportview/:reportId"

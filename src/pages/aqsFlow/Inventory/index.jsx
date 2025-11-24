@@ -43,7 +43,7 @@ const AqsInventory = () => {
       dispatch(fetchStockInwards(selectedSiteId));
       dispatch(fetchStockOutwards(selectedSiteId));
       dispatch(fetchProjectTeam(selectedSiteId));
-      dispatch(fetchMaterialNames(selectedSiteId)); // ✅ correct
+      dispatch(fetchMaterialNames(selectedSiteId)); 
     }
   }, [dispatch, selectedSiteId]);
 
@@ -89,7 +89,7 @@ const AqsInventory = () => {
       }
     } catch (err) {
       console.error("Add stock error:", err);
-      alert("Failed to add stock.");
+      // alert("Failed to add stock.");
     } finally {
       setShowPopup(false);
     }

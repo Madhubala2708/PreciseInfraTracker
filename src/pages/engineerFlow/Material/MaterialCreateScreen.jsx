@@ -362,8 +362,9 @@ const MaterialCreateScreen = () => {
 
             // Step 4: Fetch Ticket Details and Navigate
             try {
-              navigate(`/admin/engineerapprovals/ticketdetails/${ticketId}`, {
+              navigate(`/admin/ticket/${ticketId}`, {
                 state: {
+                  refresh: true,
                   from: "engineer",
                   ticketId,
                   flow: selectedApprover.map((a) => a.empId),
